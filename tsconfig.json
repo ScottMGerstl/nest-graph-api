@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "declaration": false,
+    "noImplicitAny": false,
+    "noLib": false,
+    "inlineSourceMap": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    // "removeComments": false,
+    "outDir" : "./dist"
+  },
+  "exclude": [
+        "node_modules",
+        "coverage"
+    ]
+}

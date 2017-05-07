@@ -1,0 +1,46 @@
+{
+  "name": "nest-graph-api",
+  "version": "0.1.0",
+  "description": "a sample node api built on nest.js and graphql",
+  "main": "./dist/index.js",
+  "scripts": {
+    "watch": "nodemon -e ts -w ./src -x npm run watch:serve",
+    "watch:serve": "ts-node --inspect src/index.ts",
+    "start": "node ./dist/index.js",
+    "build": "npm run clean && npm run tsc",
+    "clean": "rimraf ./bundles/ ./dist/ && npm run clean-src",
+    "clean-src": "rimraf ./src/**/*.js ./src/**/*.d.ts",
+    "lint": "tslint ./src/**/*.ts",
+    "tsc": "tsc --project . --declaration",
+    "test": "npm run quick-build && npm run coverage",
+    "coverage": "istanbul cover ./node_modules/mocha/bin/_mocha -- ./dist/test/**/*.spec.js -R spec"
+  },
+  "engines": {
+    "node": "7.10.0"
+  },
+  "keywords": [
+    "nest.js",
+    "graphql",
+    "express",
+    "node",
+    "api"
+  ],
+  "author": "Scott M Gerstl <scott.gerstl@outlook.com>",
+  "license": "ISC",
+  "dependencies": {
+    "@types/node": "^7.0.18",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.17.1",
+    "moment": "^2.18.1",
+    "nest": "^0.1.6",
+    "nest.js": "^1.0.4"
+  },
+  "devDependencies": {
+    "dotenv": "^4.0.0",
+    "nodemon": "^1.11.0",
+    "rimraf": "^2.6.1",
+    "ts-node": "^3.0.4",
+    "tslint": "^5.2.0",
+    "typescript": "^2.3.2"
+  }
+}
