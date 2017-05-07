@@ -1,7 +1,7 @@
 import { Middleware, NestMiddleware } from 'nest.js';
 import { JwtService } from '../auth/jwt.service';
 import { EncodingUtils } from '../utils/encoding.utils';
-import { UnauthorizedException } from '../../types/exceptions';
+import { UnauthorizedException, ForbiddenException } from '../../types/exceptions';
 import { JwtPayload } from '../auth/jwt.interface';
 import { ResponseUtils } from '../../framework/utils/response.utils';
 
@@ -10,8 +10,13 @@ import * as express from 'express';
 
 @Middleware()
 export class AuthHandler implements NestMiddleware {
-    constructor(private _jwtService: JwtService) { }
+    constructor(private jwtService: JwtService) { }
 
+    /**
+     * Implementation of NestMiddleware
+     *
+     * @memberOf AuthHandler
+     */
     public resolve() {
         return (req, res, next) => {
             this.verifyAuthentication(req, res, next);
@@ -27,7 +32,7 @@ export class AuthHandler implements NestMiddleware {
     public verifyAuthentication(req: express.Request, res: express.Response, next: express.NextFunction): void {
         try {
             // Parse token
-            let tokenParts: string[] = this.parseAuthenticationHeader(req);
+            let tokenParts: TokenParts = this.parseAuthenticationHeader(req);
 
             // Check the token for tampering
             let payloadPart: string = this.comparePayloadWithSignature(tokenParts);
@@ -51,7 +56,7 @@ export class AuthHandler implements NestMiddleware {
         }
         catch (err) {
             // Resolve any unknown errors
-            if (err.name !== 'UnauthorizedException' && err.name !== 'ForbiddenException') {
+            if (err instanceof UnauthorizedException === false && err.name instanceof ForbiddenException === false) {
                 err = new UnauthorizedException();
             }
 
@@ -60,7 +65,16 @@ export class AuthHandler implements NestMiddleware {
         }
     }
 
-    private parseAuthenticationHeader(req: express.Request): string[] {
+    /**
+     * parses the token and verifies its form
+     *
+     * @private
+     * @param {express.Request} req the request the token is in
+     * @returns {TokenParts} the parts of the token {header, paylod, signature}
+     *
+     * @memberOf AuthHandler
+     */
+    private parseAuthenticationHeader(req: express.Request): TokenParts {
         if (!req.headers['authorization']) {
             throw new UnauthorizedException('The authorization header is missing from the request headers');
         }
@@ -76,29 +90,49 @@ export class AuthHandler implements NestMiddleware {
         }
 
         let token: string = headerValues[1];
-        let tokenParts: string[] = token.split('.');
 
-        if (token !== undefined && token !== null && token.length > 0 && tokenParts.length === 3) {
-            return tokenParts;
+        if (token !== undefined && token !== null && token.length > 0) {
+             let parts: string[] = token.split('.');
+
+            if (parts.length === 3) {
+                let tokenParts: TokenParts = new TokenParts();
+
+                tokenParts.header = parts[0];
+                tokenParts.payload = parts[1];
+                tokenParts.signature = parts[2];
+
+                return tokenParts;
+            }
         }
-        else {
-            throw new UnauthorizedException('The authorization header requires a valid token');
-        }
+
+        throw new UnauthorizedException('The authorization header requires a valid token');
     }
-
-    private comparePayloadWithSignature(tokenParts): string {
-        let header: string = tokenParts[0];
-        let payload: string = tokenParts[1];
-        let signature: string = tokenParts[2];
-
-        if (this._jwtService.getTokenSignature(header + '.' + payload) === signature) {
-            return payload;
+    /**
+     * Checkt he header and payload against the signature to ensure no tampering was done to the token
+     *
+     * @private
+     * @param {TokenParts} tokenParts the header, payload, and signature of the token split apart
+     * @returns {string}
+     *
+     * @memberOf AuthHandler
+     */
+    private comparePayloadWithSignature(tokenParts: TokenParts): string {
+        if (this.jwtService.getTokenSignature(tokenParts.header + '.' + tokenParts.payload) === tokenParts.signature) {
+            return tokenParts.payload;
         }
         else {
             throw new UnauthorizedException();
         }
     }
 
+    /**
+     * Checks to make sure the token is effective by being between the iat and exp claims
+     *
+     * @private
+     * @param {JwtPayload} payload the information of the token
+     *
+     * @memberOf AuthHandler
+     */
     private checkEffectiveRange(payload: JwtPayload): void {
         let now = moment().utc().unix();
 
@@ -110,4 +144,10 @@ export class AuthHandler implements NestMiddleware {
             throw new UnauthorizedException('this token has expired');
         }
     }
+}
+
+class TokenParts {
+    public header: string;
+    public payload: string;
+    public signature: string;
 }
