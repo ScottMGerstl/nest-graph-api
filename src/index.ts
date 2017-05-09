@@ -13,7 +13,5 @@ const instance = express();
 instance.use(bodyParser.urlencoded({ extended: true }));
 instance.use(bodyParser.json());
 
-instance.use(bodyParser.json());
-
 const app = NestFactory.create(AppModule, instance);
 app.listen(3333, () => console.log('Application is listening on port 3333'));
