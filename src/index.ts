@@ -14,4 +14,4 @@ instance.use(bodyParser.urlencoded({ extended: true }));
 instance.use(bodyParser.json());
 
 const app = NestFactory.create(AppModule, instance);
-app.listen(3333, () => console.log('Application is listening on port 3333'));
+app.listen(process.env.PORT, () => console.log(`Application is listening on port ${process.env.PORT}`));
