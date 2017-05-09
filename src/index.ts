@@ -4,8 +4,8 @@ import { NestFactory } from 'nest.js';
 import { AppModule } from './app.module';
 import { ServerTerminationHandler } from './framework/server/server-termination.handler';
 
-import * as dotnev from 'dotenv';
-dotnev.config();
+// import * as dotnev from 'dotenv';
+// dotnev.config();
 
 new ServerTerminationHandler().init();
 
