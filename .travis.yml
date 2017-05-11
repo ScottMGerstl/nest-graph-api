@@ -1,7 +1,10 @@
 language: node_js
 node_js:
-      - "7"
+- '7'
 script:
-      # - npm test
-      - npm run build
-# after_success: npm run coverage
+- npm run build
+deploy:
+  provider: heroku
+  api_key:
+    secure: k6KUGGOPRJMW+abG7Ekk3P8dDdylzCONkjeBYtBCRa87cS2PECcefX6mb8+uqZhoMYaLANkzGw2hXpmbwXNnEQO6+LrBksE4wxw+1iOvibD9zlCOAMRkhMy4zQfecnx0YoCGOI9OAeWUQATNBzy+NwsYxYTjPT3UbMMQDW+u0HGN1/D3QeUo2ugZgmIzrE9SCEwceW4ezPLZkRxf+quzBjsqIqco3535xc/KBYCZk0wj5WSEDfR4HBIxwGhR8rMKDpFrzwNEmpi9O9A7XxS8fSg81OpsA+u5ThLuNA8JRVBNHVJOZyNUd7ByvCN5UWA0O3rRv70iSZTRLasqC+qq0u17bfq/64lVteXrODxlYfFzecTvPf3RYUNZhFmxKSqCdc8HelqecToFPWh3jRjMX56036APybfOqfDM9aUcl4PQ4Prb7IIRzL0D7g9zE63b+LIiOz8H82/4JMrFiHExgkThSibV2jvSzxPrsvndXX/4pjMfqsc9lrbh1EqEAVM/i6INvz6oiG5p0Y0dLjcPiQdt2cYoDA6Ewwte5WSZTVdO7sZmk33t/3bBCBS6FFGWCHHrAEOGXZe+mDc87eJs6JkGZpz90jUbcjIPNdJau4HnbRTvK8rkkQcK/zoagnzgItn1Cn5Nq93ROxni0avaGM1xVfw9UG/WiH5g+YzvT5k=
+  app: nest-graph-api
